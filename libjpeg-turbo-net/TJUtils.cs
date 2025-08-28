@@ -15,7 +15,7 @@ namespace TurboJpegWrapper
             throw new TJException(error);
         }
 
-        
+
 
         /// <summary>
         /// Converts array of managed structures to the unmanaged pointer
@@ -28,7 +28,7 @@ namespace TurboJpegWrapper
             var structSize =
 #if NET47
                 Marshal.SizeOf(typeof(T));
-#elif NETSTANDARD2_0
+#elif NETSTANDARD2_0 || NET5_0_OR_GREATER
                 Marshal.SizeOf<T>();
 #endif
             var result = Marshal.AllocHGlobal(structArray.Length * structSize);

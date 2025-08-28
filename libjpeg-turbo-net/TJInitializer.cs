@@ -23,7 +23,7 @@ namespace TurboJpegWrapper
                     var rootPath =
 #if NET47
                 Path.GetDirectoryName(typeof(TJUtils).Assembly.Location);
-#elif NETSTANDARD2_0
+#elif NETSTANDARD2_0 || NET5_0_OR_GREATER
                         AppContext.BaseDirectory;
 #endif
                     var platform = Platform.GetPlatformName();

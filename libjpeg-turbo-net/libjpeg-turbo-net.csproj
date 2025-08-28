@@ -1,28 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Authors>Terekhin Sergey</Authors>
-    <Company></Company>
-    <Owners></Owners>
-    <Description>Wrapper for libjpeg-turbo library</Description>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
-    <FileVersion>2.0.1.0</FileVersion>
-    <Version>2.0.1</Version>
-    <PackageIconUrl>https://a.fsdn.com/allura/p/libjpeg-turbo/icon?1478149362</PackageIconUrl>
-    <Product>Libjpeg-Turbo wrapper for .Net</Product>
-    <PackageTags>TurboJpeg libjpeg-turbo</PackageTags>
-    <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
-    <Copyright>Copyright © 2018</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Sergey-Terekhin/libjpeg-turbo-net</PackageProjectUrl>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\netstandard2.0\libjpeg-turbo-net.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\netstandard2.0\libjpeg-turbo-net.xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Authors>Terekhin Sergey</Authors>
+        <Description>Wrapper for libjpeg-turbo library</Description>
+        <AssemblyVersion>2.0.1.0</AssemblyVersion>
+        <FileVersion>2.0.1.0</FileVersion>
+        <Version>2.0.1</Version>
+        <Product>Libjpeg-Turbo wrapper for .Net</Product>
+        <PackageTags>TurboJpeg libjpeg-turbo</PackageTags>
+        <Copyright>Copyright © 2018</Copyright>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Update="turbojpeg.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>
