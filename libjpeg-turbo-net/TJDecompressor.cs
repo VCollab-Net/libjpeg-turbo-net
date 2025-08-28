@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Buffers;
+
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
@@ -13,6 +15,8 @@ namespace TurboJpegWrapper
         private readonly IntPtr _decompressorHandle;
         private bool _isDisposed;
         private readonly object _lock = new object();
+
+        private readonly ArrayBufferWriter<byte> _sharedBufferWriter = new();
 
         /// <summary>
         /// Creates new instance of <see cref="TJDecompressor"/>
@@ -49,7 +53,7 @@ namespace TurboJpegWrapper
 
             var funcResult = TurboJpegImport.tjDecompressHeader(_decompressorHandle, jpegBuf, jpegBufSize,
                 out width, out height, out _, out _);
-            
+
             if (funcResult == -1)
             {
                 TJUtils.GetErrorAndThrow();
@@ -214,6 +218,50 @@ namespace TurboJpegWrapper
             {
                 TJUtils.GetErrorAndThrow();
             }
+        }
+
+        /// <summary>
+        /// Decompress a JPEG image to an RGB, grayscale, or CMYK image using ArrayBufferWriter<byte>
+        /// </summary>
+        /// <param name="jpegBuf">Pointer to a buffer containing the JPEG image to decompress. This buffer is not modified</param>
+        /// <param name="destination">Destination buffer writer</param>
+        /// <param name="width">Compressed image width</param>
+        /// <param name="height">Compressed image height</param>
+        /// <param name="bytesPerPixel">Size in bytes of one pixel (4 for Rgba32 pixels for example)</param>
+        /// <param name="destPixelFormat">Pixel format of the destination image (see <see cref="TJPixelFormats"/> "Pixel formats".)</param>
+        /// <param name="flags">The bitwise OR of one or more of the <see cref="TJFlags"/> "flags"</param>
+        /// <exception cref="TJException">Throws if underlying decompress function failed</exception>
+        /// <exception cref="ObjectDisposedException">Object is disposed and can not be used anymore</exception>
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Global
+        public unsafe ReadOnlySpan<byte> DecompressShared(ReadOnlySpan<byte> jpegBuf, int width, int height, int bytesPerPixel, TJPixelFormats destPixelFormat, TJFlags flags)
+        {
+            _sharedBufferWriter.ResetWrittenCount();
+            var destinationSpan = _sharedBufferWriter.GetSpan(width * height * bytesPerPixel);
+
+            fixed (byte* sourceBuffer = jpegBuf)
+            fixed (byte* destinationBuffer = destinationSpan)
+            {
+                var funcResult = TurboJpegImport.tjDecompress(
+                    _decompressorHandle,
+                    (IntPtr) sourceBuffer,
+                    (ulong) jpegBuf.Length,
+                    (IntPtr) destinationBuffer,
+                    width,
+                    width * bytesPerPixel,
+                    height,
+                    (int)destPixelFormat,
+                    (int)flags
+                );
+
+                if (funcResult == -1)
+                {
+                    TJUtils.GetErrorAndThrow();
+                }
+            }
+
+            _sharedBufferWriter.Advance(destinationSpan.Length);
+
+            return _sharedBufferWriter.WrittenSpan;
         }
 
         /// <summary>
